@@ -17,6 +17,9 @@ namespace AdventureGameBackend
         // Dictionary of all the clients connections
         public static Dictionary<int, Client> clients = new Dictionary<int, Client>();
 
+        public delegate void PacketHandler(int _fromClient, Packet _packet);
+        public static Dictionary<int, PacketHandler> packetHandlers;
+
 
         // Socket Connection (From System.Net.Sockets)
         public static TcpListener tcpListener;
@@ -70,6 +73,11 @@ namespace AdventureGameBackend
             {
                 clients.Add(i,new Client(i));
             }
+            packetHandlers = new Dictionary<int, PacketHandler>()
+            {
+                {(int)ClientPackets.welcomeReceived, ServerHandle.WelcomeReceived }
+            };
+            Console.WriteLine("Initialized packets");
         }
     }
 }
