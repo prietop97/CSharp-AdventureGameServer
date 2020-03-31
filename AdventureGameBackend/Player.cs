@@ -11,7 +11,6 @@ namespace AdventureGameBackend
         public string username;
         public Vector3 position;
         public Vector3 change;
-        public Quaternion rotation;
 
         private float moveSpeed = 5f / Constants.TICKS_PER_SEC;
         private float[] inputs;
@@ -21,7 +20,6 @@ namespace AdventureGameBackend
             id = _id;
             username = _username;
             position = _spawnPosition;
-
             inputs = new float[2];
         }
 
