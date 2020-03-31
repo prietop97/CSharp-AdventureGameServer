@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
+using System.Numerics;
 
 namespace AdventureGameBackend
 {
@@ -12,6 +13,7 @@ namespace AdventureGameBackend
   
         public static int dataBufferSize = 4096;
         public int id;
+        public Player player;
         public TCP tcp;
         public UDP udp;
         
@@ -50,6 +52,16 @@ namespace AdventureGameBackend
                 ServerSend.Welcome(id, "Welcome to the server!");
 
             }
+
+            public void Disconnect()
+            {
+                socket.Close();
+                stream = null;
+                receivedData = null;
+                receiveBuffer = null;
+                socket = null;
+            }
+
             public void SendData(Packet _packet)
             {
                 try
@@ -72,7 +84,7 @@ namespace AdventureGameBackend
                     int _byteLength = stream.EndRead(_result);
                     if(_byteLength <= 0)
                     {
-                        // TODO disconnect
+                        Server.clients[id].Disconnect();
                         return;
                     }
 
@@ -85,7 +97,7 @@ namespace AdventureGameBackend
                 catch(Exception _ex)
                 {
                     Console.WriteLine($"Error receiving TCP data: {_ex}");
-                    // TODO disconnect
+                    Server.clients[id].Disconnect();
                 }
             }
 
@@ -146,7 +158,11 @@ namespace AdventureGameBackend
             public void Connect(IPEndPoint _endPoint)
             {
                 endPoint = _endPoint;
-                ServerSend.UDPTest(id);
+            }
+
+            public void Disconnect()
+            {
+                endPoint = null;
             }
 
             public void SendData(Packet _packet)
@@ -168,6 +184,39 @@ namespace AdventureGameBackend
                     }
                 });
             }
+        }
+
+        public void SendIntoGame(string _playerName)
+        {
+            player = new Player(id, _playerName, new Vector3(0, 0, 0));
+
+            foreach(Client _client in Server.clients.Values)
+            {
+                if (_client.player != null)
+                {
+                    if (_client.id != id)
+                    {
+                        ServerSend.SpawnPlayer(id, _client.player);
+                    }
+                }
+            }
+
+            foreach(Client _client in Server.clients.Values)
+            {
+                if(_client.player != null)
+                {
+                    ServerSend.SpawnPlayer(_client.id, player);
+                }
+            }
+        }
+
+        private void Disconnect()
+        {
+            Console.WriteLine($"{tcp.socket.Client.RemoteEndPoint} has disconnected.");
+            player = null;
+
+            tcp.Disconnect();
+            udp.Disconnect();
         }
 
     }
