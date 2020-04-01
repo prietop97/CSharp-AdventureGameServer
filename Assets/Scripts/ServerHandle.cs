@@ -18,8 +18,14 @@ class ServerHandle
     public static void PlayerMovement(int _fromClient, Packet _packet)
     {
         Vector3 _change = _packet.ReadVector3();
-        bool _isWalking = _packet.ReadBool();
+        bool _isAttacking = _packet.ReadBool();
         Server.clients[_fromClient].player.change = _change;
-        Server.clients[_fromClient].player.attackInput = _isWalking;
+        Server.clients[_fromClient].player.attackInput = _isAttacking;
+    }
+    public static void MoveRoom(int _fromClient, Packet _packet)
+    {
+        int _room = _packet.ReadInt();
+        Server.clients[_fromClient].player.room = _room;
+        Server.clients[_fromClient].player.changedRoom = true;
     }
 }

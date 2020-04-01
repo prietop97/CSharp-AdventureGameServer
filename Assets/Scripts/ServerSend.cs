@@ -1,5 +1,6 @@
 ﻿
 
+using System.Collections.Generic;
 using UnityEngine;
 
 class ServerSend
@@ -25,14 +26,14 @@ class ServerSend
         }
     }
 
-    private static void SendTCPDataToAll(int _exceptClient, Packet _packet)
+    private static void SendTCPDataToAll(int room, Packet _packet)
     {
         _packet.WriteLength();
-        for (int i = 1; i <= Server.MaxPlayers; i++)
+        foreach (KeyValuePair<int,Client> client in Server.clients)
         {
-            if (i != _exceptClient)
+            if(client.Value.player.room == room)
             {
-                Server.clients[i].tcp.SendData(_packet);
+                client.Value.tcp.SendData(_packet);
             }
         }
 
