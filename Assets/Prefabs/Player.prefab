@@ -150,3 +150,5 @@ MonoBehaviour:
   change: {x: 0, y: 0, z: 0}
   attackInput: 0
   currentState: 0
+  room: 0
+  changedRoom: 0

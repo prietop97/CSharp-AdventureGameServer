@@ -12,6 +12,7 @@ public class Player : MonoBehaviour
     public PlayerState currentState;
     public int room;
     public bool changedRoom;
+    private Rigidbody2D myrigidbody;
 
     public enum PlayerState
     {
@@ -29,6 +30,7 @@ public class Player : MonoBehaviour
         attackInput = false;
         room = 1;
         changedRoom = false;
+        myrigidbody = GetComponent<Rigidbody2D>();
 
     }
 
@@ -44,6 +46,7 @@ public class Player : MonoBehaviour
             //change.y *= -1;
             //ServerSend.PlayerPosition(this);
             //ServerSend.AnimatorIsWalking(id, false);
+            transform.rotation = Quaternion.identity;
         }
         if (attackInput && currentState != PlayerState.attack)
         {
@@ -92,9 +95,7 @@ public class Player : MonoBehaviour
     void MoveCharacter()
     {
         change.Normalize();
-        transform.position = transform.position += change * speed * Time.deltaTime;
-        
-
+        myrigidbody.MovePosition(transform.position += change * speed * Time.deltaTime);
         ServerSend.PlayerPosition(this);
     }
 
